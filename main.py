@@ -72,6 +72,7 @@ class ProcessRequest(BaseModel):
 async def process_file(request: ProcessRequest):
     file_path = request.file_path
     task = request.task
+    summary = "Sorry, we could not process your request. Please try again or contact support if the issue persists."  # Default summary for failure
     print("Received file path and task:")
     print(f"  File path: {file_path}")
     print(f"  Task: {task}")
@@ -132,7 +133,7 @@ async def process_file(request: ProcessRequest):
             print("[EXECUTION] Code execution stderr:")
             print(result.stderr)
             # Extract summary from stdout
-            summary = None
+            summary = ""
             for line in result.stdout.splitlines():
                 if line.strip().lower().startswith("summary:"):
                     summary = line.strip()[len("summary:"):].strip()
