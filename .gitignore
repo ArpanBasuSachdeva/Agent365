@@ -2,3 +2,4 @@
 temp/
 codes/
 try.py
+__pycache__/
