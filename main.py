@@ -86,17 +86,23 @@ async def process_file(request: ProcessRequest):
         print(f"\n--- Attempt {attempt+1} ---")
         # 1. Generate steps and code
         prompt = (
-            f"You are an expert Python developer. The user wants to: '{task}' "
-            f"on the file at path: '{modified_path}'. "
-            "You have full CRUD (Create, Read, Update, Delete) permissions on this file. "
-            "You are allowed to read all details from the file to make any changes required by the user. "
-            "Perform all operations directly in the Excel file, and ensure all changes are reflected in the file. "
-            "At the end, output a detailed summary of what was changed and where (e.g., 'at row 4, changed name to ...'). "
-            "Generate a step-by-step plan, then generate Python code to accomplish this. "
-            "The code should take the file path as input and save the result in-place. "
-            "Only output the code, nothing else. Do NOT include any markdown, code block, or ```python formatting.\n"
-            "Only use pip-installable packages such as openpyxl, pandas, etc. "
-            "Do not use packages that do not exist on PyPI."
+            f"You are an expert Python developer with full CRUD permissions on the file at '{modified_path}'.\n"
+            f"The user’s goal: {task!r}\n\n"
+            "STEP 1 – INSPECTION:\n"
+            "- Open and read every sheet in the file at the given path ('{modified_path}').\n"
+            "- Identify its schema: sheet names, headers, data types, formulas, and any metadata.\n\n"
+            "STEP 2 – PLANNING:\n"
+            "- Produce a clear, ordered plan of exactly what to change (e.g. sheet 'Sales', row 4 column 'Amount', update formula X→Y).\n"
+            "- Reference specific sheets, rows, columns and explain why each change is needed for the user’s goal.\n\n"
+            "STEP 3 – CODE GENERATION:\n"
+            "- Translate your plan into pure Python code (no markdown or fenced blocks) that:\n"
+            "    • Accepts the file path ('{modified_path}') as input\n"
+            "    • Uses only pip‑installable libraries (e.g. pandas, openpyxl, python‑libreoffice)\n"
+            "    • Does NOT use Microsoft Office tools—use only LibreOffice-compatible tools\n"
+            "    • Does NOT use packages that do not exist on PyPI\n"
+            "    • Modifies the file in place\n"
+            "- At the end of your script, print a single line starting with 'SUMMARY:' listing each change performed (e.g. 'SUMMARY: Sheet \"Data\", row 4 col \"Name\" changed to \"Alice\"').\n\n"
+            "Ensure your code logically follows your plan, leverages all relevant information in the file, and uses only pip‑installable packages."
         )
         print("[GENERATOR] Prompt to Gemini:")
         print(prompt)
@@ -138,8 +144,13 @@ async def process_file(request: ProcessRequest):
             print(e.stderr)
             # Send error back to agent
             error_prompt = (
-                f"The following error occurred while running your code:\n{e.stderr}\n"
-                "Please fix the code and output only the corrected code. Do NOT include any markdown, code block, or ```python formatting."
+                f"The code you generated to process '{modified_path}' failed with this error:\n{e.stderr}\n\n"
+                "Please revisit your PLAN and correct only the specific code sections that caused this error.\n"
+                "- Do NOT rewrite the entire script—show only the changed lines or blocks.\n"
+                "- Maintain the same input signature (file path) and output format (print 'SUMMARY:' at end).\n"
+                "- Continue using only pip‑installable Python packages and LibreOffice-compatible tools.\n"
+                "- Do NOT include any markdown, code block, or ```python formatting.\n\n"
+                "Output only the corrected Python code."
             )
             print("[GENERATOR] Prompting Gemini for code correction:")
             print(error_prompt)
@@ -152,9 +163,25 @@ async def process_file(request: ProcessRequest):
         with open(modified_path, "rb") as f:
             modified_file_bytes = f.read()
         validate_prompt = (
-            f"User asked: '{task}'. Here is the original file and the modified file. "
-            "Check that ONLY the requested task has been executed and nothing else has been changed. "
-            "If the task is completed and no other changes are present, reply 'YES' and explain. Otherwise, reply 'NO' and explain what is wrong."
+            f"You are a meticulous validator. The user requested: {task!r}.\n"
+            "You have two files:\n"
+            f"  • Original: '{file_path}'\n"
+            f"  • Modified: '{modified_path}'\n\n"
+            "VALIDATION STEPS:\n"
+            "1. Open and read both the original and modified Excel files at their respective paths.\n"
+            "2. Compare the executor’s intended PLAN to the actual modifications in '{modified_path}'.\n"
+            "3. Check for any unintended edits in data values, formulas, formatting, or metadata.\n"
+            "4. Check for any mistakes or inconsistencies in the modified file."
+            "5. Confirm every requested change is present, and no other cells were altered.\n\n"
+            "If everything matches exactly, reply:\n"
+            "  YES\n"
+            "  Briefly list the validations you performed (e.g. 'Checked sheet X rows 1–5, columns A–D').\n\n"
+            "If you find any discrepancy, reply:\n"
+            "  NO\n"
+            "  For each issue, specify:\n"
+            "    - What was expected (based on user request)\n"
+            "    - What you observed instead (sheet, row, col, old→new)\n\n"
+            "This detail will guide the executor to correct its code. Do NOT include any extra text."
         )
         print("[VALIDATOR] Prompt to Gemini:")
         print(validate_prompt)
@@ -168,8 +195,16 @@ async def process_file(request: ProcessRequest):
             return FileResponse(modified_path, filename=f"updated_{os.path.basename(file_path)}", headers=headers)
         # else, feedback to executor agent
         feedback_prompt = (
-            f"The validator says: {validation}\n"
-            "Please fix your code and output only the corrected code. Do NOT include any markdown, code block, or ```python formatting."
+            "The validator identified the following issues:\n"
+            f"{validation}\n\n"
+            f"Original file path: '{file_path}'\n"
+            f"Modified file path: '{modified_path}'\n\n"
+            "Please adjust your code to resolve these specific discrepancies.\n"
+            "- Do NOT rewrite unchanged sections—only output the corrected code segments.\n"
+            "- Maintain the same input signature and print 'SUMMARY:' after applying your fixes.\n"
+            "- Continue using only pip‑installable Python packages and LibreOffice-compatible tools.\n"
+            "- Do NOT include any markdown, code block, or ```python formatting.\n\n"
+            "Output only the revised Python code."
         )
         print("[GENERATOR] Validator feedback to Gemini:")
         print(feedback_prompt)
