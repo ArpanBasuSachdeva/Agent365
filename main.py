@@ -89,6 +89,10 @@ async def process_file(request: ProcessRequest):
         prompt = (
             f"You are an expert Python developer with full CRUD permissions on the file at '{modified_path}'.\n"
             f"The user’s goal: {task!r}\n\n"
+            "Make sure to put all planning steps in the code in comments. And any extra text you add in the code as comments."
+            "Leave notes for yourself in the code as comments."
+            "When adding new things like images etc thinks properly and properly manage layout keeping the document presentable"
+            "Only write python codes and do not add anything like ```python or file name in the code"
             "STEP 1 – INSPECTION:\n"
             "- Open and read every sheet in the file at the given path ('{modified_path}').\n"
             "- Identify its schema: sheet names, headers, data types, formulas, and any metadata.\n\n"
@@ -168,6 +172,7 @@ async def process_file(request: ProcessRequest):
             "You have two files:\n"
             f"  • Original: '{file_path}'\n"
             f"  • Modified: '{modified_path}'\n\n"
+            "Leave notes for yourself in the code as comments."
             "VALIDATION STEPS:\n"
             "1. Open and read both the original and modified Excel files at their respective paths.\n"
             "2. Compare the executor’s intended PLAN to the actual modifications in '{modified_path}'.\n"
