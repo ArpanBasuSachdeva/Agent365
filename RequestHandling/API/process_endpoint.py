@@ -2,22 +2,31 @@ import os
 import shutil
 import uuid
 import subprocess
-from fastapi import APIRouter
+from fastapi import APIRouter, status, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
+from utils.db_table import insert_office_agent_record
 from ..HelperClass import call_gemini, install_dependencies, TEMP_DIR, CODES_DIR
 
 router = APIRouter()
+security = HTTPBasic()
+
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)) -> str:
+    # Global auth already validated in app dependencies; here we just read the username
+    return credentials.username
 
 class ProcessRequest(BaseModel):
+    chat_name: str
     file_path: str
     task: str
 
 @router.post("/process/")
-async def process_file(request: ProcessRequest):
+async def process_file(request: ProcessRequest, current_user: str = Depends(get_current_username)):
     try:
         file_path = request.file_path
         task = request.task
+        chat_name = request.chat_name
         summary = "Sorry, we could not process your request. Please try again or contact support if the issue persists."  # Default summary for failure
         print("Received file path and task:")
         print(f"  File path: {file_path}")
@@ -37,7 +46,7 @@ async def process_file(request: ProcessRequest):
                 "Make sure to put all planning steps in the code in comments. And any extra text you add in the code as comments."
                 "Leave notes for yourself in the code as comments."
                 "When adding new things like images etc thinks properly and properly manage layout keeping the document presentable"
-                "Only write python codes and do not add anything like ```python or file name in the code"
+                "Only write python codes and make sure not to add anything like ```python or file name in the code"
                 "STEP 1 – INSPECTION:\n"
                 "- Open and read every sheet in the file at the given path ('{modified_path}').\n"
                 "- Identify its schema: sheet names, headers, data types, formulas, and any metadata.\n\n"
@@ -50,10 +59,19 @@ async def process_file(request: ProcessRequest):
                 "    • Does NOT use Microsoft Office tools—use only LibreOffice-compatible tools\n"
                 "    • Does NOT use packages that do not exist on PyPI\n"
                 "    • Modifies the file in place\n"
+                "    • Before importing any external library, check if it is already installed and meets version requirements; only install via pip if missing or outdated.\n"
                 "    • If you add a visual representation make sure to add legends, titles, class names, class labels, class values, scale, values on x and y axis and other relevant information to make it more presentable. If you have to add new columns for making charts show those columns in data (only if not already present) unless expliciptly told by user not to do so. \n"
-                # "    • Properly set and show the scale of the chart and set appropriate distance between labels for the axis if applicable. \n"
+                "    • Properly set and show the scale of the chart and set appropriate distance between labels for the axis if applicable. \n"
                 "- At the end of your script, print a single line starting with 'SUMMARY:' listing each change performed (e.g. 'SUMMARY: Sheet \"Data\", row 4 col \"Name\" changed to \"Alice\"').\n\n"
-                "Ensure your code logically follows your plan, leverages all relevant information in the file, and uses only pip‑installable packages."
+                "Ensure your code logically follows your plan, leverages all relevant information in the file, and uses only pip-installable packages.\n\n"
+                "For Word (.docx) documents:\n"
+                "- STEP 1: Inspect all paragraphs, runs, tables, headers, and footers in the file at '{modified_path}'.\n"
+                "- STEP 2: Plan edits by referencing exact paragraph indices, table cells, headers/footers, or styles to be changed.\n"
+                "- STEP 3: Generate Python code (using python-docx) to implement these edits, ensuring correct formatting, spacing, and layout. If inserting images or charts, manage placement and scaling properly. Keep the document clean and readable.\n\n"
+                "For PowerPoint (.pptx) presentations:\n"
+                "- STEP 1: Inspect all slides, placeholders, shapes, text boxes, images, and charts in the file at '{modified_path}'.\n"
+                "- STEP 2: Plan edits by referencing exact slide numbers and shape indices, describing why each change supports the user's goal.\n"
+                "- STEP 3: Generate Python code (using python-pptx) to perform these edits. When adding images, shapes, or charts, ensure proper layout, alignment, labels, and legends. Titles and subtitles must remain clear and visually consistent. Charts must have correct axes, scales, and legends.\n\n"
             )
             print("[GENERATOR] Prompt to Gemini:")
             print(prompt)
@@ -176,6 +194,18 @@ async def process_file(request: ProcessRequest):
                 if "YES" in validation.upper():
                     print("[SUCCESS] Task validated successfully. Returning updated file.")
                     headers = {"X-Task-Summary": summary}
+                    # Log success to DB before returning
+                    try:
+                        insert_office_agent_record(
+                            user_id=(current_user or "")[:8],
+                            chat_name=chat_name,
+                            input_file_path=file_path,
+                            output_file_path=modified_path,
+                            query=task,
+                            remarks=f"200 OK | {summary}"
+                        )
+                    except Exception as db_err:
+                        print(f"[DB] Insert failed: {db_err}")
                     return FileResponse(modified_path, filename=f"updated_{os.path.basename(file_path)}", headers=headers)
                 # else, feedback to executor agent
                 feedback_prompt = (
@@ -199,15 +229,51 @@ async def process_file(request: ProcessRequest):
                 # If validation fails, we'll still return the file but with a warning
                 summary = f"{summary} (Note: Validation step failed due to: {str(validation_error)})"
                 headers = {"X-Task-Summary": summary, "X-Validation-Status": "Failed"}
+                # Log with warning to DB
+                try:
+                    insert_office_agent_record(
+                        user_id=(current_user or "")[:8],
+                        chat_name=chat_name,
+                        input_file_path=file_path,
+                        output_file_path=modified_path,
+                        query=task,
+                        remarks=f"200 OK (Validation failed) | {summary}"
+                    )
+                except Exception as db_err:
+                    print(f"[DB] Insert failed: {db_err}")
                 return FileResponse(modified_path, filename=f"updated_{os.path.basename(file_path)}", headers=headers)
         print("[FAILURE] Could not process the request after several attempts.")
         message = "Sorry, the task could not be fully completed. Here is your file (may be unchanged or partially changed)."
         print(f"[FAILURE] {message}")
         headers = {"X-Task-Status": message, "X-Task-Summary": summary}
+        # Log failure to DB
+        try:
+            insert_office_agent_record(
+                user_id=(current_user or "")[:8],
+                chat_name=chat_name,
+                input_file_path=file_path,
+                output_file_path=modified_path,
+                query=task,
+                remarks=f"500 ERROR | {message} | {summary}"
+            )
+        except Exception as db_err:
+            print(f"[DB] Insert failed: {db_err}")
         return FileResponse(modified_path, filename=f"updated_{os.path.basename(file_path)}", headers=headers)
     except Exception as e:
         print(f"[ERROR] Unexpected error in process_file: {e}")
+        # Log unexpected error to DB
+        try:
+            insert_office_agent_record(
+                user_id=str(uuid.uuid4())[:8],
+                chat_name=request.chat_name if hasattr(request, 'chat_name') else "",
+                input_file_path=request.file_path if hasattr(request, 'file_path') else "",
+                output_file_path="",
+                query=request.task if hasattr(request, 'task') else "",
+                remarks=f"500 ERROR | {str(e)}"
+            )
+        except Exception as db_err:
+            print(f"[DB] Insert failed: {db_err}")
         return JSONResponse(
             {"error": f"Internal server error: {str(e)}"}, 
-            status_code=500
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )

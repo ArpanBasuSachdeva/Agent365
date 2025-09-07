@@ -1,5 +1,6 @@
 fastapi
 uvicorn
 python-multipart
-dotenv 
-requests 
+python-dotenv
+requests
+psycopg2
