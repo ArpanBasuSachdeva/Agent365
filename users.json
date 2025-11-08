@@ -1,0 +1,21 @@
+{
+  "admin": {
+    "password_hash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "role": "admin",
+    "created_at": 1759275059.86768,
+    "last_login": 1762605100.219388,
+    "last_file_path": "D:\\Ricky\\Projects\\Office_Agent\\files\\PMEASS3J4_1762605360.docx"
+  },
+  "user1": {
+    "password_hash": "e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446",
+    "role": "user",
+    "created_at": 1759275059.86768,
+    "last_login": 1759277440.4252641
+  },
+  "new": {
+    "password_hash": "65fd3b5c243ea857f91daef8e3d5c203fa045f33e034861998b9d74cc42ceb24",
+    "role": "user",
+    "created_at": 1762514632.3644934,
+    "last_login": 1762514791.7036507
+  }
+}
