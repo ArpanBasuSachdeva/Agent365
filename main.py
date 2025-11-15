@@ -44,3 +44,8 @@ app = FastAPI(dependencies=[Depends(verify_basic_auth)])
 
 # Include the RequestHandling router
 app.include_router(request_handling_router)
+
+# Run the server if this file is executed directly
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
