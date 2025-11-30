@@ -25,575 +25,867 @@ st.set_page_config(
 # Custom CSS for chat-like interface with light theme - Enhanced for readability
 st.markdown("""
     <style>
-    /* Main app background - Light theme */
+    /* Main app background - Soft lavender tint */
     .stApp {
-        background-color: #f5f7fa;
+        background-color: #f8f7fc;
     }
-    
+
     /* Main content area */
     .main .block-container {
         padding-top: 2rem;
         padding-bottom: 2rem;
+        max-width: 1200px;
     }
-    
-    /* Header styling */
+
+    /* Header styling - Soft lavender gradient */
     .main-header {
         font-size: 2.5rem;
-        font-weight: bold;
-        color: #1e3a8a;
+        font-weight: 600;
+        color: #2c3e50;
         text-align: center;
-        padding: 1.5rem 0;
-        border-bottom: 3px solid #3b82f6;
+        padding: 2rem 1.5rem;
+        border-bottom: 2px solid #e8eaf6;
         margin-bottom: 2rem;
-        background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    
-    /* Chat messages - Better padding */
-    .chat-message {
-        padding: 1.5rem 1.75rem;
+        background: linear-gradient(135deg, #fdfbff 0%, #f3f2f8 100%);
         border-radius: 12px;
-        margin: 1.25rem 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(121, 134, 203, 0.08);
+    }
+
+    /* Chat messages - Centered text with soothing colors */
+    .chat-message {
+        padding: 1.75rem 2rem;
+        border-radius: 14px;
+        margin: 1.5rem 0;
+        box-shadow: 0 1px 4px rgba(121, 134, 203, 0.1);
         background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        line-height: 1.7;
+        border: 1px solid #e8eaf6;
+        line-height: 1.8;
         font-size: 1rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        text-align: left;
     }
-    
+
     .user-message {
-        background-color: #dbeafe;
-        border-left: 5px solid #2563eb;
-        border: 1px solid #93c5fd;
-        color: #1e40af;
+        background-color: #f3f2f8;
+        border-left: 4px solid #9fa8da;
+        border: 1px solid #c5cae9;
+        color: #2c3e50;
     }
-    
+
     .user-message strong {
-        color: #1e3a8a;
+        color: #1a3a5c;
     }
-    
+
     .assistant-message {
-        background-color: #f0fdf4;
-        border-left: 5px solid #16a34a;
-        border: 1px solid #86efac;
-        color: #166534;
+        background-color: #f1f8f4;
+        border-left: 4px solid #81c784;
+        border: 1px solid #c8e6c9;
+        color: #2c3e50;
     }
-    
+
     .assistant-message strong {
-        color: #14532d;
+        color: #2d5a2d;
     }
-    
+
     .error-message {
-        background-color: #fef2f2;
-        border-left: 5px solid #dc2626;
-        color: #991b1b;
-        border: 1px solid #fca5a5;
+        background-color: #fff4f1;
+        border-left: 4px solid #ffab91;
+        color: #662c2c;
+        border: 1px solid #ffccbc;
     }
-    
+
     .error-message strong {
-        color: #7f1d1d;
+        color: #551f1f;
     }
-    
+
     .success-message {
-        background-color: #f0fdf4;
-        border-left: 5px solid #16a34a;
-        color: #166534;
-        border: 1px solid #86efac;
+        background-color: #f1f8f4;
+        border-left: 4px solid #81c784;
+        color: #2d5a2d;
+        border: 1px solid #c8e6c9;
     }
-    
-    /* Buttons - Improved sizing and padding */
+
+    /* Buttons - Centered text with soft lavender */
     .stButton>button {
         width: 100%;
-        border-radius: 10px;
-        background-color: #2563eb;
+        border-radius: 12px;
+        background-color: #9fa8da !important;
         color: white !important;
         border: none;
-        padding: 0.875rem 1.5rem !important;
-        font-weight: 600;
-        font-size: 1rem;
-        min-height: 48px;
-        transition: all 0.3s;
-        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
-        letter-spacing: 0.3px;
-    }
-    
-    .stButton>button:hover {
-        background-color: #1d4ed8;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        transform: translateY(-2px);
-    }
-    
-    .stButton>button:active {
-        transform: translateY(0);
-    }
-    
-    /* File info boxes - Better padding */
-    .file-info {
-        background-color: #fffbeb;
-        padding: 1.25rem 1.5rem;
-        border-radius: 10px;
-        margin: 0.75rem 0;
-        border: 2px solid #fcd34d;
-        color: #78350f;
-        font-size: 1rem;
-        line-height: 1.6;
-    }
-    
-    /* Input fields - Enhanced visibility with proper padding */
-    .stTextInput > div > div > input {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 8px !important;
-        color: #1e293b !important;
-        padding: 0.75rem 1rem !important;
-        font-size: 1rem !important;
-        min-height: 44px !important;
-    }
-    
-    .stTextArea > div > div > textarea {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 8px !important;
-        color: #1e293b !important;
-        padding: 0.75rem 1rem !important;
-        font-size: 1rem !important;
-        line-height: 1.6 !important;
-    }
-    
-    .stTextInput > div > div > input:focus,
-    .stTextArea > div > div > textarea:focus {
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-        outline: none !important;
-    }
-    
-    /* Selectbox styling - Fixed for visibility */
-    .stSelectbox > div > div {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 8px !important;
-        padding: 0.5rem !important;
-        min-height: 44px !important;
-    }
-    
-    .stSelectbox > div > div > div {
-        background-color: #ffffff !important;
-        color: #1e293b !important;
-        padding: 0.5rem 0.75rem !important;
-    }
-    
-    .stSelectbox label {
-        color: #1e293b !important;
-        font-weight: 500 !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    /* Dropdown menu items */
-    [data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        color: #1e293b !important;
-    }
-    
-    [data-baseweb="popover"] {
-        background-color: #ffffff !important;
-    }
-    
-    [data-baseweb="menu"] {
-        background-color: #ffffff !important;
-    }
-    
-    [data-baseweb="menu"] li {
-        background-color: #ffffff !important;
-        color: #1e293b !important;
-        padding: 0.75rem 1rem !important;
-    }
-    
-    [data-baseweb="menu"] li:hover {
-        background-color: #f1f5f9 !important;
-        color: #1e293b !important;
-    }
-    
-    /* Sidebar styling - Better spacing */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 2px solid #e2e8f0;
-        padding: 1.5rem 1rem;
-    }
-    
-    [data-testid="stSidebar"] .stMarkdown {
-        color: #1e293b;
-        line-height: 1.6;
-    }
-    
-    [data-testid="stSidebar"] .element-container {
-        margin-bottom: 1.5rem;
-    }
-    
-    /* Headers - Better contrast */
-    h1, h2, h3, h4, h5, h6 {
-        color: #1e293b;
-        font-weight: 600;
-    }
-    
-    /* Text - Better readability */
-    p, div, span {
-        color: #334155;
-    }
-    
-    /* Expanders - Better visibility and padding */
-    .streamlit-expanderHeader {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        color: #1e293b;
-        font-weight: 600;
-        padding: 1rem 1.25rem;
-        font-size: 1rem;
-        min-height: 48px;
-        display: flex;
-        align-items: center;
-    }
-    
-    .streamlit-expanderContent {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        padding: 1.5rem;
-        margin-top: 0;
-    }
-    
-    /* Info boxes - Better padding */
-    .stInfo {
-        background-color: #dbeafe;
-        border-left: 4px solid #2563eb;
-        color: #1e40af;
-        padding: 1rem 1.25rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-    }
-    
-    .stSuccess {
-        background-color: #d1fae5;
-        border-left: 4px solid #10b981;
-        color: #065f46;
-        padding: 1rem 1.25rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-    }
-    
-    .stWarning {
-        background-color: #fef3c7;
-        border-left: 4px solid #f59e0b;
-        color: #92400e;
-        padding: 1rem 1.25rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-    }
-    
-    .stError {
-        background-color: #fee2e2;
-        border-left: 4px solid #ef4444;
-        color: #991b1b;
-        padding: 1rem 1.25rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-    }
-    
-    /* Tabs styling - Better spacing */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        background-color: #f8fafc;
-        padding: 0.75rem;
-        border-radius: 10px;
-        margin-bottom: 1.5rem;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background-color: #ffffff;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        color: #475569;
-        font-weight: 600;
-        padding: 0.875rem 1.5rem;
-        min-height: 48px;
-        transition: all 0.3s;
-    }
-    
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: #f1f5f9;
-        border-color: #cbd5e1;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: #2563eb;
-        color: #ffffff !important;
-        border-color: #2563eb;
-        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
-    }
-    
-    /* Slider styling - Better visibility */
-    .stSlider {
-        padding: 1rem 0;
-    }
-    
-    .stSlider > div > div {
-        background-color: #ffffff;
-    }
-    
-    .stSlider label {
-        color: #1e293b;
-        font-weight: 500;
-        margin-bottom: 0.75rem;
-        font-size: 1rem;
-    }
-    
-    /* Checkbox styling - Better spacing */
-    .stCheckbox {
-        padding: 0.75rem 0;
-    }
-    
-    .stCheckbox > label {
-        color: #1e293b;
+        padding: 1rem 2rem !important;
         font-weight: 500;
         font-size: 1rem;
-        padding-left: 0.5rem;
-    }
-    
-    .stCheckbox input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        margin-right: 0.5rem;
-    }
-    
-    /* Divider */
-    hr {
-        border-color: #e2e8f0;
-        margin: 1.5rem 0;
-    }
-    
-    /* Code blocks */
-    code {
-        background-color: #f1f5f9;
-        color: #dc2626;
-        padding: 0.2rem 0.4rem;
-        border-radius: 4px;
-        font-size: 0.9em;
-    }
-    
-    /* JSON display */
-    .stJson {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 1rem;
-    }
-    
-    /* Login page styling */
-    .login-container {
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 2rem;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    /* Small text - Better contrast */
-    small {
-        color: #64748b;
-        font-size: 0.875rem;
-    }
-    
-    /* Links */
-    a {
-        color: #2563eb;
-        text-decoration: none;
-    }
-    
-    a:hover {
-        color: #1d4ed8;
-        text-decoration: underline;
-    }
-    
-    /* Spinner */
-    .stSpinner > div {
-        border-top-color: #2563eb;
-    }
-    
-    /* Download button - Better sizing */
-    .stDownloadButton > button {
-        background-color: #10b981;
-        color: white !important;
-        border-radius: 10px;
-        padding: 0.875rem 1.5rem !important;
-        font-weight: 600;
-        font-size: 1rem;
-        min-height: 48px;
-        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
-        transition: all 0.3s;
-    }
-    
-    .stDownloadButton > button:hover {
-        background-color: #059669;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        transform: translateY(-2px);
-    }
-    
-    /* Radio buttons - Better visibility and spacing */
-    .stRadio > div {
-        background-color: #ffffff;
-        padding: 1rem 1.25rem;
-        border-radius: 10px;
-        border: 2px solid #e2e8f0;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stRadio label {
-        color: #1e293b;
-        font-weight: 500;
-        font-size: 1rem;
-        padding: 0.5rem 0;
-    }
-    
-    .stRadio input[type="radio"] {
-        margin-right: 0.75rem;
-        width: 20px;
-        height: 20px;
-    }
-    
-    /* File uploader - Better sizing */
-    .stFileUploader > div {
-        background-color: #ffffff;
-        border: 2px dashed #cbd5e1;
-        border-radius: 12px;
-        padding: 2rem 1.5rem;
-        min-height: 120px;
+        min-height: 52px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(159, 168, 218, 0.2);
+        letter-spacing: 0.2px;
+        white-space: normal;
+        line-height: 1.5;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s;
+        text-align: center;
     }
-    
-    .stFileUploader > div:hover {
-        border-color: #2563eb;
-        background-color: #f8fafc;
-        border-style: solid;
+
+    .stButton>button:hover {
+        background-color: #7986cb !important;
+        box-shadow: 0 3px 8px rgba(121, 134, 203, 0.25);
+        transform: translateY(-1px);
     }
-    
-    .stFileUploader label {
+
+    .stButton>button:active {
+        transform: translateY(0);
+    }
+
+    /* File info boxes - Soft peach background */
+    .file-info {
+        background-color: #fff8f0;
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border: 1px solid #ffe0b2;
+        color: #5c4a2c;
+        font-size: 1rem;
+        line-height: 1.7;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* Input fields - White with lavender borders */
+    .stTextInput > div > div > input {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        color: #2c3e50 !important;
+        padding: 0.875rem 1.25rem !important;
+        font-size: 1rem !important;
+        min-height: 50px !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+    }
+
+    .stTextArea > div > div > textarea {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        color: #2c3e50 !important;
+        padding: 1rem 1.25rem !important;
+        font-size: 1rem !important;
+        line-height: 1.7 !important;
+        min-height: 120px !important;
+    }
+
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: #9fa8da !important;
+        box-shadow: 0 0 0 3px rgba(159, 168, 218, 0.1) !important;
+        outline: none !important;
+    }
+
+    /* Selectbox styling - White with lavender accents - FIX DARK DROPDOWN */
+    .stSelectbox > div > div {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        padding: 0.75rem 1rem !important;
+        min-height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .stSelectbox > div > div > div {
+        background-color: #ffffff !important;
+        color: #2c3e50 !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .stSelectbox label {
+        color: #2c3e50 !important;
+        font-weight: 500 !important;
+        margin-bottom: 0.75rem !important;
+        font-size: 1rem !important;
+    }
+
+    /* Fix dropdown dark background - Multiple selectors */
+    [data-baseweb="select"] {
+        background-color: #ffffff !important;
+    }
+
+    [data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #2c3e50 !important;
+    }
+
+    [data-baseweb="select"] input {
+        background-color: #ffffff !important;
+        color: #2c3e50 !important;
+    }
+
+    /* Dropdown popover - Light lavender */
+    [data-baseweb="popover"] {
+        background-color: #fdfbff !important;
+        border: 1px solid #e8eaf6 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 4px 12px rgba(121, 134, 203, 0.12) !important;
+    }
+
+    /* Dropdown menu container - Light lavender */
+    [data-baseweb="menu"] {
+        background-color: #fdfbff !important;
+        padding: 0.5rem !important;
+    }
+
+    /* Dropdown menu items - Light lavender */
+    [data-baseweb="menu"] li {
+        background-color: #fdfbff !important;
+        color: #2c3e50 !important;
+        padding: 0.875rem 1.25rem !important;
+        border-radius: 8px !important;
+        margin: 0.25rem 0 !important;
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+    }
+
+    [data-baseweb="menu"] li:hover {
+        background-color: #e8eaf6 !important;
+        color: #2c3e50 !important;
+    }
+
+    /* Override dark dropdown options */
+    [role="option"] {
+        background-color: #fdfbff !important;
+        color: #2c3e50 !important;
+    }
+
+    [role="option"]:hover {
+        background-color: #e8eaf6 !important;
+        color: #2c3e50 !important;
+    }
+
+    /* Sidebar styling - Soft lavender tint */
+    [data-testid="stSidebar"] {
+        background-color: #fdfbff;
+        border-right: 1px solid #e8eaf6;
+        padding: 2rem 1.25rem;
+    }
+
+    [data-testid="stSidebar"] .stMarkdown {
+        color: #2c3e50;
+        line-height: 1.7;
+    }
+
+    [data-testid="stSidebar"] .element-container {
+        margin-bottom: 1.75rem;
+    }
+
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    /* Text */
+    p, div, span, label {
+        color: #4a5568;
+        line-height: 1.7;
+    }
+
+    /* Expanders - Soft lavender background */
+    .streamlit-expanderHeader {
+        background-color: #f3f2f8;
+        border: 1px solid #e8eaf6;
+        border-radius: 10px;
+        color: #2c3e50;
         font-weight: 500;
-        color: #1e293b;
+        padding: 1.25rem 1.5rem;
+        font-size: 1rem;
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        line-height: 1.5;
+    }
+
+    .streamlit-expanderContent {
+        background-color: #fdfbff;
+        border: 1px solid #e8eaf6;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        padding: 1.75rem 1.5rem;
+        margin-top: 0;
+    }
+
+    /* Info boxes */
+    .stInfo {
+        background-color: #f3f2f8;
+        border-left: 3px solid #9fa8da;
+        color: #2c3e50;
+        padding: 1.25rem 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        line-height: 1.7;
+    }
+
+    .stSuccess {
+        background-color: #f1f8f4;
+        border-left: 3px solid #81c784;
+        color: #2d5a2d;
+        padding: 1.25rem 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        line-height: 1.7;
+    }
+
+    .stWarning {
+        background-color: #fff8f0;
+        border-left: 3px solid #ffb74d;
+        color: #5c4a2c;
+        padding: 1.25rem 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        line-height: 1.7;
+    }
+
+    .stError {
+        background-color: #fff4f1;
+        border-left: 3px solid #ffab91;
+        color: #662c2c;
+        padding: 1.25rem 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        line-height: 1.7;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: #f3f2f8;
+        padding: 0.875rem;
+        border-radius: 12px;
+        margin-bottom: 1.75rem;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        background-color: #ffffff;
+        border: 1px solid #e8eaf6;
+        border-radius: 10px;
+        color: #4a5568;
+        font-weight: 500;
+        padding: 1rem 1.75rem;
+        min-height: 50px;
+        transition: all 0.2s;
+        white-space: normal;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #f3f2f8;
+        border-color: #c5cae9;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #9fa8da;
+        color: #ffffff !important;
+        border-color: #9fa8da;
+        box-shadow: 0 2px 4px rgba(159, 168, 218, 0.2);
+    }
+
+    /* Slider */
+    .stSlider {
+        padding: 1.25rem 0;
+    }
+
+    .stSlider > div > div {
+        background-color: #fdfbff;
+    }
+
+    .stSlider label {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    /* Checkbox */
+    .stCheckbox {
+        padding: 1rem 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .stCheckbox > label {
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 1rem;
+        padding-left: 0.625rem;
+        line-height: 1.6;
+        display: flex;
+        align-items: center;
+    }
+
+    .stCheckbox input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        margin-right: 0.75rem;
+        accent-color: #9fa8da;
+    }
+
+    /* Divider */
+    hr {
+        border-color: #e8eaf6;
+        margin: 2rem 0;
+    }
+
+    /* Code blocks */
+    code {
+        background-color: #fff8f0;
+        color: #d97070;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.9em;
+        word-wrap: break-word;
+    }
+
+    /* JSON display */
+    .stJson {
+        background-color: #f3f2f8;
+        border: 1px solid #e8eaf6;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    /* Login container */
+    .login-container {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 2.5rem;
+        background-color: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(159, 168, 218, 0.12);
+    }
+
+    /* Small text */
+    small {
+        color: #718096 !important;
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* Links */
+    a {
+        color: #7986cb;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    a:hover {
+        color: #5c6bc0;
+        text-decoration: underline;
+    }
+
+    /* Spinner */
+    .stSpinner > div {
+        border-top-color: #9fa8da;
+    }
+
+    /* Download button */
+    .stDownloadButton > button {
+        background-color: #81c784 !important;
+        color: white !important;
+        border-radius: 12px;
+        padding: 1rem 2rem !important;
+        font-weight: 500;
+        font-size: 1rem;
+        min-height: 52px;
+        box-shadow: 0 2px 4px rgba(129, 199, 132, 0.2);
+        transition: all 0.2s;
+        white-space: normal;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stDownloadButton > button:hover {
+        background-color: #66bb6a !important;
+        box-shadow: 0 3px 8px rgba(129, 199, 132, 0.25);
+        transform: translateY(-1px);
+    }
+
+    /* Radio buttons */
+    .stRadio > div {
+        background-color: #fdfbff;
+        padding: 1.25rem 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e8eaf6;
         margin-bottom: 0.75rem;
     }
-    
+
+    .stRadio label {
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: 0.625rem 0;
+        line-height: 1.6;
+        display: flex;
+        align-items: center;
+    }
+
+    .stRadio input[type="radio"] {
+        margin-right: 1rem;
+        width: 20px;
+        height: 20px;
+        accent-color: #9fa8da;
+    }
+
+    /* File uploader - FIX DARK BACKGROUND */
+    .stFileUploader {
+        background-color: transparent !important;
+    }
+
+    .stFileUploader > div {
+        background-color: #ffffff !important;
+        border: 2px dashed #c5cae9 !important;
+        border-radius: 14px !important;
+        padding: 2.5rem 2rem !important;
+        min-height: 140px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.2s !important;
+    }
+
+    .stFileUploader > div:hover {
+        border-color: #9fa8da !important;
+        background-color: #f3f2f8 !important;
+        border-style: solid !important;
+    }
+
+    .stFileUploader label {
+        font-weight: 500 !important;
+        color: #2c3e50 !important;
+        margin-bottom: 1rem !important;
+        font-size: 1rem !important;
+    }
+
+    .stFileUploader section {
+        background-color: #ffffff !important;
+        border: 2px dashed #c5cae9 !important;
+        border-radius: 14px !important;
+        padding: 2.5rem 2rem !important;
+    }
+
+    .stFileUploader section:hover {
+        border-color: #9fa8da !important;
+        background-color: #f3f2f8 !important;
+        border-style: solid !important;
+    }
+
+    .stFileUploader section > div {
+        background-color: transparent !important;
+    }
+
+    .stFileUploader button {
+        background-color: #9fa8da !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 1.5rem !important;
+        border: none !important;
+    }
+
+    .stFileUploader button:hover {
+        background-color: #7986cb !important;
+    }
+
+    /* Override file uploader dark backgrounds */
+    [data-testid="stFileUploader"] {
+        background-color: transparent !important;
+    }
+
+    [data-testid="stFileUploader"] > div {
+        background-color: #ffffff !important;
+    }
+
+    [data-testid="stFileUploader"] section {
+        background-color: #ffffff !important;
+        border: 2px dashed #c5cae9 !important;
+        color: #2c3e50 !important;
+    }
+
+    [data-testid="stFileUploader"] section small {
+        color: #718096 !important;
+    }
+
+    [data-testid="stFileUploader"] button {
+        background-color: #9fa8da !important;
+        color: white !important;
+    }
+
     /* Metric cards */
     .stMetric {
         background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1rem;
+        border: 1px solid #e8eaf6;
+        border-radius: 12px;
+        padding: 1.5rem;
     }
-    
+
     /* Progress bar */
     .stProgress > div > div > div {
-        background-color: #2563eb;
+        background-color: #9fa8da;
     }
-    
-    /* Markdown text in sidebar */
+
+    .stProgress > div > div {
+        background-color: #e8eaf6;
+    }
+
+    /* Sidebar headers */
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        color: #1e293b;
+        color: #2c3e50;
     }
-    
-    /* Better spacing for containers */
+
+    /* Element spacing */
     .element-container {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
     }
-    
+
     /* Column spacing */
     [data-testid="column"] {
-        padding: 0 0.75rem;
+        padding: 0 1rem;
     }
-    
-    /* Ensure all text is readable */
+
+    /* Markdown text */
     .stMarkdown {
-        color: #334155;
+        color: #4a5568;
     }
-    
-    /* Table styling - Better padding */
+
+    /* Table styling */
     .stDataFrame {
         background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 1rem;
+        border: 1px solid #e8eaf6;
+        border-radius: 12px;
+        padding: 1.25rem;
         overflow: auto;
     }
-    
+
     .stDataFrame table {
         border-collapse: separate;
         border-spacing: 0;
     }
-    
+
     .stDataFrame th {
-        background-color: #f8fafc;
-        color: #1e293b;
+        background-color: #f3f2f8;
+        color: #2c3e50;
         font-weight: 600;
-        padding: 0.875rem 1rem;
+        padding: 1rem 1.25rem;
+        text-align: center;
     }
-    
+
     .stDataFrame td {
-        padding: 0.75rem 1rem;
-        color: #334155;
+        padding: 0.875rem 1.25rem;
+        color: #4a5568;
+        text-align: center;
     }
-    
-    /* Ensure proper contrast for all interactive elements */
+
+    /* Interactive elements */
     button, input, select, textarea {
-        color: #1e293b;
+        color: #2c3e50 !important;
     }
-    
-    /* Better visibility for disabled elements */
+
+    /* Disabled elements */
     button:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
-        background-color: #94a3b8 !important;
+        background-color: #c5cae9 !important;
     }
-    
+
     /* Headers spacing */
     h1 {
         margin-top: 0;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e8eaf6;
     }
-    
+
     h2 {
+        margin-top: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h3 {
         margin-top: 1.5rem;
         margin-bottom: 1.25rem;
     }
-    
-    h3 {
-        margin-top: 1.25rem;
-        margin-bottom: 1rem;
-    }
-    
+
     /* Divider spacing */
     hr {
-        margin: 2rem 0;
+        margin: 2.5rem 0;
         border-width: 1px;
     }
-    
-    /* JSON display - Better padding */
+
+    /* JSON display */
     .stJson {
-        padding: 1.5rem !important;
-        border-radius: 10px !important;
+        padding: 1.75rem !important;
+        border-radius: 12px !important;
     }
-    
-    /* Spinner - Better visibility */
+
+    /* Spinner visibility */
     .stSpinner {
-        padding: 2rem;
+        padding: 2.5rem;
+    }
+
+    /* Fix emoji rendering */
+    * {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+    }
+
+    /* Ensure text doesn't overflow */
+    button, .stButton > button, .stDownloadButton > button {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        white-space: normal !important;
+    }
+
+    /* Better line height */
+    p, span, div, label, button {
+        line-height: 1.7;
+    }
+
+    /* Ensure selectbox text fits */
+    [data-baseweb="select"] {
+        min-height: 50px !important;
+        background-color: #ffffff !important;
+    }
+
+    [data-baseweb="select"] > div {
+        padding: 0.75rem 1rem !important;
+        line-height: 1.5 !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: #ffffff !important;
+        color: #2c3e50 !important;
+    }
+
+    /* Number input */
+    .stNumberInput > div > div > input {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        color: #2c3e50 !important;
+        padding: 0.875rem 1.25rem !important;
+        min-height: 50px !important;
+    }
+
+    .stNumberInput > div > div > input:focus {
+        border-color: #9fa8da !important;
+        box-shadow: 0 0 0 3px rgba(159, 168, 218, 0.1) !important;
+    }
+
+    /* Date input */
+    .stDateInput > div > div > input {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        color: #2c3e50 !important;
+        padding: 0.875rem 1.25rem !important;
+        min-height: 50px !important;
+    }
+
+    /* Time input */
+    .stTimeInput > div > div > input {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        color: #2c3e50 !important;
+        padding: 0.875rem 1.25rem !important;
+        min-height: 50px !important;
+    }
+
+    /* Multiselect */
+    .stMultiSelect > div > div {
+        background-color: #ffffff !important;
+        border: 1px solid #c5cae9 !important;
+        border-radius: 10px !important;
+        min-height: 50px !important;
+    }
+
+    .stMultiSelect span[data-baseweb="tag"] {
+        background-color: #e8eaf6 !important;
+        color: #2c3e50 !important;
+        border-radius: 6px !important;
+        padding: 0.25rem 0.5rem !important;
+    }
+
+    /* Alert boxes */
+    [data-testid="stAlert"] {
+        background-color: #f3f2f8;
+        border: 1px solid #e8eaf6;
+        border-left: 3px solid #9fa8da;
+        border-radius: 10px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    /* Success indicator */
+    [data-testid="stSuccess"] {
+        background-color: #f1f8f4 !important;
+        border-left: 3px solid #81c784 !important;
+    }
+
+    /* Warning indicator */
+    [data-testid="stWarning"] {
+        background-color: #fff8f0 !important;
+        border-left: 3px solid #ffb74d !important;
+    }
+
+    /* Error indicator */
+    [data-testid="stError"] {
+        background-color: #fff4f1 !important;
+        border-left: 3px solid #ffab91 !important;
+    }
+
+    /* Info indicator */
+    [data-testid="stInfo"] {
+        background-color: #f3f2f8 !important;
+        border-left: 3px solid #9fa8da !important;
+    }
+
+    /* Form submit button */
+    .stForm button[type="submit"] {
+        background-color: #9fa8da !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f3f2f8;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #c5cae9;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #9fa8da;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -605,6 +897,10 @@ if 'username' not in st.session_state:
     st.session_state.username = None
 if 'password' not in st.session_state:
     st.session_state.password = None
+if 'user_role' not in st.session_state:
+    st.session_state.user_role = None
+if 'user_profile' not in st.session_state:
+    st.session_state.user_profile = None
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 if 'selected_file' not in st.session_state:
@@ -648,128 +944,44 @@ def make_request(method, endpoint, **kwargs):
 
 
 def login():
-    """Login page with tabs for Login, Create User, and Change Password"""
+    """Login page - only login functionality"""
     st.markdown('<div class="main-header">🤖 Agent365 - AI File Assistant</div>', unsafe_allow_html=True)
     
-    # Create tabs for different actions
-    tab1, tab2, tab3 = st.tabs(["🔐 Login", "➕ Create User", "🔑 Change Password"])
+    st.markdown("### Login to Your Account")
+    username = st.text_input("Username", key="login_username")
+    password = st.text_input("Password", type="password", key="login_password")
     
-    with tab1:
-        st.markdown("### Login to Your Account")
-        username = st.text_input("Username", key="login_username")
-        password = st.text_input("Password", type="password", key="login_password")
-        
-        if st.button("Login", type="primary", use_container_width=True):
-            if not username or not password:
-                st.error("Please enter both username and password")
-            else:
-                # Test authentication
-                auth = HTTPBasicAuth(username, password)
-                try:
-                    response = requests.get(f"{API_BASE_URL}/health", auth=auth)
-                    if response.status_code == 200:
-                        st.session_state.authenticated = True
-                        st.session_state.username = username
-                        st.session_state.password = password
-                        st.success("✅ Login successful!")
-                        time.sleep(0.5)
-                        st.rerun()
+    if st.button("Login", type="primary", use_container_width=True):
+        if not username or not password:
+            st.error("Please enter both username and password")
+        else:
+            # Test authentication
+            auth = HTTPBasicAuth(username, password)
+            try:
+                response = requests.get(f"{API_BASE_URL}/health", auth=auth)
+                if response.status_code == 200:
+                    # Load user profile to get role
+                    profile_response = requests.get(f"{API_BASE_URL}/profile", auth=auth)
+                    if profile_response.status_code == 200:
+                        profile = profile_response.json()
+                        st.session_state.user_profile = profile
+                        st.session_state.user_role = profile.get("role", "user")
                     else:
-                        st.error("Invalid username or password")
-                except requests.exceptions.ConnectionError:
-                    st.error("Cannot connect to backend. Make sure the API is running on port 8000.")
-                except Exception as e:
-                    st.error(f"Login failed: {str(e)}")
-    
-    with tab2:
-        st.markdown("### Create New User Account")
-        st.info("💡 Fill in the form below to create a new user account. You'll be able to login after creation.")
-        
-        new_username = st.text_input("Username", key="create_username", help="Choose a unique username")
-        new_password = st.text_input("Password", type="password", key="create_password", help="Choose a secure password")
-        confirm_password = st.text_input("Confirm Password", type="password", key="create_confirm_password", help="Re-enter your password")
-        new_role = st.selectbox("Role", ["user", "admin"], key="create_role", help="Select user role (admin has additional privileges)")
-        
-        if st.button("Create User", type="primary", use_container_width=True, key="create_user_btn"):
-            if not new_username or not new_password:
-                st.error("Please fill in both username and password")
-            elif new_password != confirm_password:
-                st.error("❌ Passwords do not match. Please try again.")
-            elif len(new_password) < 4:
-                st.error("❌ Password must be at least 4 characters long.")
-            else:
-                with st.spinner("Creating user account..."):
-                    # Try to create user - we need admin credentials or the API should allow public registration
-                    # For now, we'll try with a default admin or handle it gracefully
-                    try:
-                        # First, try to get admin credentials from session or use a default
-                        # Since we're on login page, we'll need to handle this differently
-                        # The API requires authentication, so we'll need to check if there's a way to create users without auth
-                        # For now, let's try with a basic request and see what happens
-                        user_data = {
-                            "username": new_username,
-                            "password": new_password,
-                            "role": new_role
-                        }
-                        
-                        # Try to create user - this might require admin auth
-                        # We'll use a temporary approach: try without auth first, if it fails, show a message
-                        try:
-                            response = requests.post(f"{API_BASE_URL}/users", data=user_data)
-                            if response.status_code == 200:
-                                data = response.json()
-                                st.success(f"✅ {data.get('message', 'User created successfully!')}")
-                                st.info("💡 You can now login with your new credentials.")
-                            elif response.status_code == 401:
-                                st.warning("⚠️ User creation requires admin privileges. Please contact an administrator or login as admin first.")
-                            else:
-                                st.error(f"❌ Error: {response.text}")
-                        except requests.exceptions.ConnectionError:
-                            st.error("Cannot connect to backend. Make sure the API is running on port 8000.")
-                    except Exception as e:
-                        st.error(f"Failed to create user: {str(e)}")
-    
-    with tab3:
-        st.markdown("### Change Your Password")
-        st.info("💡 Enter your username and current password to change your password.")
-        
-        change_username = st.text_input("Username", key="change_username", help="Enter your username")
-        old_password = st.text_input("Current Password", type="password", key="change_old_password", help="Enter your current password")
-        new_password = st.text_input("New Password", type="password", key="change_new_password", help="Enter your new password")
-        confirm_new_password = st.text_input("Confirm New Password", type="password", key="change_confirm_new_password", help="Re-enter your new password")
-        
-        if st.button("Change Password", type="primary", use_container_width=True, key="change_password_btn"):
-            if not change_username or not old_password or not new_password or not confirm_new_password:
-                st.error("Please fill in all fields")
-            elif new_password != confirm_new_password:
-                st.error("❌ New passwords do not match. Please try again.")
-            elif len(new_password) < 4:
-                st.error("❌ Password must be at least 4 characters long.")
-            else:
-                with st.spinner("Changing password..."):
-                    try:
-                        auth = HTTPBasicAuth(change_username, old_password)
-                        password_data = {
-                            "old_password": old_password,
-                            "new_password": new_password
-                        }
-                        
-                        response = requests.put(
-                            f"{API_BASE_URL}/users/{change_username}/password",
-                            auth=auth,
-                            data=password_data
-                        )
-                        
-                        if response.status_code == 200:
-                            data = response.json()
-                            st.success(f"✅ {data.get('message', 'Password changed successfully!')}")
-                            st.info("💡 You can now login with your new password.")
-                        else:
-                            st.error(f"❌ Error {response.status_code}: {response.text}")
-                    except requests.exceptions.ConnectionError:
-                        st.error("Cannot connect to backend. Make sure the API is running on port 8000.")
-                    except Exception as e:
-                        st.error(f"Failed to change password: {str(e)}")
+                        st.session_state.user_role = "user"  # Default to user if profile fails
+                        st.session_state.user_profile = None
+                    
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.session_state.password = password
+                    st.success("✅ Login successful!")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error("Invalid username or password")
+            except requests.exceptions.ConnectionError:
+                st.error("Cannot connect to backend. Make sure the API is running on port 8000.")
+            except Exception as e:
+                st.error(f"Login failed: {str(e)}")
 
 
 def logout():
@@ -777,6 +989,8 @@ def logout():
     st.session_state.authenticated = False
     st.session_state.username = None
     st.session_state.password = None
+    st.session_state.user_role = None
+    st.session_state.user_profile = None
     st.session_state.chat_history = []
     st.session_state.selected_file = None
     st.session_state.user_files = []
@@ -811,16 +1025,27 @@ def main_app():
     with col1:
         st.markdown('<div class="main-header">🤖 Agent365 - AI File Assistant</div>', unsafe_allow_html=True)
     with col2:
-        st.markdown(f"<div style='padding: 1rem; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;'><strong style='color: #1e293b;'>User:</strong> <span style='color: #475569;'>{st.session_state.username}</span></div>", unsafe_allow_html=True)
+        role_badge = ""
+        if st.session_state.user_role == "admin":
+            role_badge = " <span style='background-color: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;'>ADMIN</span>"
+        st.markdown(f"<div style='padding: 1rem; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;'><strong style='color: #1e293b;'>User:</strong> <span style='color: #475569;'>{st.session_state.username}</span>{role_badge}</div>", unsafe_allow_html=True)
         if st.button("Logout"):
             logout()
     
     # Sidebar
     with st.sidebar:
         st.header("📁 Navigation")
+        
+        # Build navigation options based on user role
+        nav_options = ["💬 Chat", "📤 Upload", "📋 History", "📚 Versions", "🗂️ My Files", "⏪ Rollback"]
+        
+        # Add admin-only options
+        if st.session_state.user_role == "admin":
+            nav_options.extend(["👥 Create User", "🔑 Change Password"])
+        
         page = st.radio(
             "Select Page",
-            ["💬 Chat", "📤 Upload", "📋 History", "📚 Versions", "🗂️ My Files", "⏪ Rollback"],
+            nav_options,
             label_visibility="collapsed"
         )
         
@@ -858,6 +1083,10 @@ def main_app():
         my_files_page()
     elif page == "⏪ Rollback":
         rollback_page()
+    elif page == "👥 Create User":
+        create_user_page()
+    elif page == "🔑 Change Password":
+        change_password_page()
 
 
 def chat_page():
@@ -1221,9 +1450,111 @@ def rollback_page():
                     st.info("No versions found for this file.")
 
 
+def create_user_page():
+    """Create user page - admin only"""
+    if st.session_state.user_role != "admin":
+        st.error("❌ Access denied. Admin privileges required.")
+        return
+    
+    st.header("👥 Create New User Account")
+    st.info("💡 Fill in the form below to create a new user account.")
+    
+    new_username = st.text_input("Username", key="create_username", help="Choose a unique username")
+    new_password = st.text_input("Password", type="password", key="create_password", help="Choose a secure password (minimum 4 characters)")
+    confirm_password = st.text_input("Confirm Password", type="password", key="create_confirm_password", help="Re-enter your password")
+    new_role = st.selectbox("Role", ["user", "admin"], key="create_role", help="Select user role (admin has additional privileges)")
+    
+    if st.button("Create User", type="primary", use_container_width=True, key="create_user_btn"):
+        if not new_username or not new_password:
+            st.error("Please fill in both username and password")
+        elif new_password != confirm_password:
+            st.error("❌ Passwords do not match. Please try again.")
+        elif len(new_password) < 4:
+            st.error("❌ Password must be at least 4 characters long.")
+        else:
+            with st.spinner("Creating user account..."):
+                try:
+                    user_data = {
+                        "username": new_username,
+                        "password": new_password,
+                        "role": new_role
+                    }
+                    
+                    data, error = make_request("POST", "/users", data=user_data)
+                    if error:
+                        st.error(f"❌ Error: {error}")
+                    else:
+                        st.success(f"✅ {data.get('message', 'User created successfully!')}")
+                        st.info("💡 The user can now login with their credentials.")
+                except Exception as e:
+                    st.error(f"Failed to create user: {str(e)}")
+
+
+def change_password_page():
+    """Change password page - admin only"""
+    if st.session_state.user_role != "admin":
+        st.error("❌ Access denied. Admin privileges required.")
+        return
+    
+    st.header("🔑 Change User Password")
+    st.info("💡 Enter the username and new password to change a user's password.")
+    
+    change_username = st.text_input("Username", key="change_username", help="Enter the username whose password you want to change")
+    new_password = st.text_input("New Password", type="password", key="change_new_password", help="Enter the new password")
+    confirm_new_password = st.text_input("Confirm New Password", type="password", key="change_confirm_new_password", help="Re-enter the new password")
+    
+    if st.button("Change Password", type="primary", use_container_width=True, key="change_password_btn"):
+        if not change_username or not new_password or not confirm_new_password:
+            st.error("Please fill in all fields")
+        elif new_password != confirm_new_password:
+            st.error("❌ New passwords do not match. Please try again.")
+        elif len(new_password) < 4:
+            st.error("❌ Password must be at least 4 characters long.")
+        else:
+            with st.spinner("Changing password..."):
+                try:
+                    # For admin changing another user's password, we need to use a different approach
+                    # Since the API requires old_password, we'll need to check if there's an admin override
+                    # For now, we'll use the current admin's credentials to authenticate
+                    auth = get_auth()
+                    if not auth:
+                        st.error("Not authenticated")
+                        return
+                    
+                    # Try to change password - note: API might require old_password
+                    # We'll need to handle this based on API design
+                    password_data = {
+                        "old_password": st.session_state.password,  # Admin's current password for auth
+                        "new_password": new_password
+                    }
+                    
+                    # Use PUT request with admin auth
+                    response = requests.put(
+                        f"{API_BASE_URL}/users/{change_username}/password",
+                        auth=auth,
+                        data=password_data
+                    )
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        st.success(f"✅ {data.get('message', 'Password changed successfully!')}")
+                    else:
+                        error_msg = response.text
+                        try:
+                            error_json = response.json()
+                            error_msg = error_json.get('detail', error_msg)
+                        except:
+                            pass
+                        st.error(f"❌ Error: {error_msg}")
+                        st.info("💡 Note: The API may require the user's current password. If this is the case, users should change their own passwords after login.")
+                except requests.exceptions.ConnectionError:
+                    st.error("Cannot connect to backend. Make sure the API is running on port 8000.")
+                except Exception as e:
+                    st.error(f"Failed to change password: {str(e)}")
+
+
 # Main app logic
 if not st.session_state.authenticated:
     login()
 else:
     main_app()
-
